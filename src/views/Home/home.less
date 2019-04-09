@@ -1,0 +1,33 @@
+.home{
+    height: 100%;
+    // 最外层容器
+    .el-container{   
+        height: 100%;
+        // 左侧边栏
+        .el-aside {
+          background-color: #32446e;
+          color: #333;
+          text-align: center;
+        }
+        // 右边容器
+        .el-container{
+            // 头部和底部
+            .el-header, .el-footer {
+            background-color: #fff;
+            color: #32446e;
+            line-height: 60px;
+             }  
+             .el-header{
+                border-bottom:1px solid #ccc;
+             } 
+             .el-footer{
+                border-top:1px solid #ccc;
+             }
+            //  核心组件部分
+            .el-main {
+              background-color: #fcfcfc;
+              color: #32446e;
+            }
+        }
+    }
+}
