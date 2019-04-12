@@ -110,6 +110,8 @@
 // 引入验证用户名函数
 import { nameReg,telReg } from "@/utils/validator/validator.js"
 export default {
+   // 注入reloa依赖
+    inject:['reload'],
     data(){
         // 姓名验证
         const validateName=(rule, value, callback) => {
@@ -254,30 +256,50 @@ export default {
         },
         //   提交按钮事件
         submitForm(formName) {
-        this.$refs[formName].validate((valid) => {
-            // 如果成功
-          if (valid) {
-            // 提交数据给后端
-            let params = {
-                name:this.clientAddForm.name,
-                sex: this.clientAddForm.sex,
-                salesStatus:this.clientAddForm.salesStatus,
-                courseData:this.clientAddForm.courseData,
-                tel:this.clientAddForm.tel,
-                school:this.clientAddForm.school,
-                classData:this.clientAddForm.classData,
-                courseStatus:this.clientAddForm.courseStatus,
-                courseStatus:this.clientAddForm.courseStatus
-            };     
-            console.log(params);
-                   
-            alert("登录成功");
-            // 路由跳转
-            this.$router.push("/home/salesmanage")
-          } else {
-            return false;
-          }
-        });
+            this.$refs[formName].validate((valid) => {
+                // 如果成功
+            if (valid) {
+                // 提交数据给后端
+                let params = {
+                    name:this.clientAddForm.name,
+                    sex: this.clientAddForm.sex,
+                    salesStatus:this.clientAddForm.salesStatus,
+                    courseData:this.clientAddForm.courseData.join('/'),
+                    tel:this.clientAddForm.tel,
+                    school:this.clientAddForm.school,
+                    classData:this.clientAddForm.classData,
+                    courseStatus:this.clientAddForm.courseStatus,
+                    salesMan:this.clientAddForm.salesMan
+                };     
+                //向后端发送数据
+                this.request.post('/client/clientadd',params)    
+                .then(res=>{
+                    // 接收数据
+                    let { code , msg } = res;
+                    if(code===0){
+                         // 判断是否继续添加数据
+                        this.$confirm('添加数据成功，是否继续添加数据?', '提示', {
+                            confirmButtonText: '确定',
+                            cancelButtonText: '取消',
+                            type: 'success'
+                            }).then(() => {
+                            // 调用刷新方法
+                            this.reload();
+                            }).catch(() => {        
+                            // 跳转列表页面
+                            this.$router.push("/home/salesmanage");
+                        })
+                    }else if(code===1){
+                        this.$message.error(msg);
+                    }
+                })
+                .catch(err=>{
+                    console.log(err);
+                })
+            } else {
+                return false;
+            }
+            });
       },
     }
 }

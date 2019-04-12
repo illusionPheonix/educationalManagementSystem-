@@ -29,28 +29,28 @@
                     </el-table-column>
                     <!-- 班级名称 -->
                     <el-table-column
-                    prop="className"
+                    prop="classname"
                     label="班级名称"
                     align="center"
                     >
                     </el-table-column>
                     <!-- 相关课程 -->
                     <el-table-column
-                    prop="classCourse"
+                    prop="classcourse"
                     label="相关课程"
                     align="center"
                     >
                     </el-table-column>
                      <!--班型  -->
                     <el-table-column
-                    prop="classSet"
+                    prop="classset"
                     align="center"
                     label="班型"
                     show-overflow-tooltip>
                     </el-table-column>
                     <!--班级类别  -->
                     <el-table-column
-                    prop="classType"
+                    prop="classtype"
                     align="center"
                     label="班级类别"
                     show-overflow-tooltip>
@@ -58,16 +58,23 @@
                       <!--周课次数  -->
                     <el-table-column
                     align="center"
-                    prop="classCourses"
+                    prop="classcourses"
                     label="周课次数"
                     width="90"
                     show-overflow-tooltip>
                     </el-table-column>
                      <!--上课日期  -->
                     <el-table-column
-                    prop="classTime"
+                    prop="classdate"
                     align="center"
                     label="上课日期"
+                    show-overflow-tooltip>
+                    </el-table-column>
+                     <!--上课时间  -->
+                    <el-table-column
+                    prop="classtime"
+                    align="center"
+                    label="上课时间"
                     show-overflow-tooltip>
                     </el-table-column>
                     <!--上课教室  -->
@@ -125,30 +132,7 @@
 export default {
     data(){
         return{
-            classTableData: [
-                {
-                className:"少儿英语精英版",
-                classCourse: "剑桥英语",
-                classSet:"4~8人精品班",
-                classType:"春季班",
-                classCourses:"2",
-                classDate:["星期一","星期三"],
-                classTime:"19:00",
-                classroom:"教室二",
-                teacher:"张老师"
-                },
-                {
-                className:"少儿英语精英版",
-                classCourse: "剑桥英语",
-                classSet:"4~8人精品班",
-                classType:"春季班",
-                classCourses:"2",
-                classDate:["星期一","星期三"],
-                classTime:"19:00",
-                classroom:"教室二",
-                teacher:"张老师"
-                }
-            ],
+            classTableData: [],
             multipleSelection: [],
             // 默认页
             currentPage: 1,
@@ -182,6 +166,17 @@ export default {
             console.log(`当前页: ${val}`);
         }
     },
+    // 生命周期钩子函数 vue实例对象创建完成 dom还没有生成
+    created(){
+        // 发送axios请求获得所有的数据
+        this.request.get('/class/classmanage')
+        .then(res=>{
+            this.classTableData=res;
+        })
+        .catch(err=>{
+            console.log(err);
+        })
+    }
 }
 </script>
 

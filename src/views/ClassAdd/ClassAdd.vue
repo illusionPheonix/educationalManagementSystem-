@@ -119,6 +119,8 @@
 
 <script>
 export default {
+    // 注入reloa依赖
+    inject:['reload'],
     data(){
         return{
             // 表单数据
@@ -309,16 +311,36 @@ export default {
                 classSet:this.studentAddForm.classSet,
                 classType: this.studentAddForm.classType,
                 classCourses:this.studentAddForm.classCourses,
-                classDate:this.studentAddForm.classDate,
+                classDate:this.studentAddForm.classDate.join('/'),
                 classTime:this.studentAddForm.classTime,
                 classroom:this.studentAddForm.classroom,
                 teacher:this.studentAddForm.teacher
             };    
-            console.log(params);
-                    
-            alert("登录成功");
-            // 路由跳转
-            this.$router.push("/home/classmanage")
+            // 向后台发送请求
+            this.request.post('/class/classadd',params)
+            .then(res=>{
+                // 接收参数
+                let { code,msg } = res;
+                if(code===0){
+                     // 判断是否继续添加数据
+                    this.$confirm('添加数据成功，是否继续添加数据?', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'success'
+                        }).then(() => {
+                        // 调用刷新方法
+                        this.reload();
+                        }).catch(() => {        
+                        // 跳转列表页面
+                        this.$router.push("/home/classmanage");
+                    })
+                }else{
+                    this.$message.error(msg);
+                }
+            })
+            .catch(err=>{
+                console.log(err);
+            })
           } else {
             return false;
           }

@@ -86,6 +86,8 @@
 // 引入验证用户名函数
 import { accountReg,passwordReg,nameReg,telReg } from "@/utils/validator/validator.js"
 export default {
+    // 注入reloa依赖
+    inject:['reload'],
     data(){
         // 用户名验证
         const validateAccount=(rule, value, callback) => {
@@ -202,28 +204,51 @@ export default {
         },
         //   提交按钮事件
         submitForm(formName) {
-        this.$refs[formName].validate((valid) => {
-            // 如果成功
-          if (valid) {
-            // 提交数据给后端
-            let params = {
-                account:this.staffAddForm.account,
-                password:this.staffAddForm.password,
-                name:this.staffAddForm.name,
-                sex: this.staffAddForm.sex,
-                birthDate:this.staffAddForm.birthDate.toLocaleDateString(),
-                entryDate:this.staffAddForm.entryDate.toLocaleDateString(),
-                staffGrounp:this.staffAddForm.staffGrounp,
-                tel:this.staffAddForm.tel
-            };            
-            alert("登录成功");
-            // 路由跳转
-            this.$router.push("/home/staffmanage")
-          } else {
-            return false;
-          }
-        });
-      },
+            this.$refs[formName].validate((valid) => {
+                // 如果成功
+            if (valid) {
+                // 提交数据给后端
+                let params = {
+                    account:this.staffAddForm.account,
+                    password:this.staffAddForm.password,
+                    name:this.staffAddForm.name,
+                    sex: this.staffAddForm.sex,
+                    birthDate:this.staffAddForm.birthDate.toLocaleDateString(),
+                    entryDate:this.staffAddForm.entryDate.toLocaleDateString(),
+                    staffGrounp:this.staffAddForm.staffGrounp,
+                    tel:this.staffAddForm.tel
+                };            
+                // 向后台发送数据
+                this.request.post('/staff/staffadd',params)
+                .then(res=>{
+                    // 结构
+                    let { code , msg } = res;
+                    if(code===0){
+                        // 判断是否继续添加数据
+                        this.$confirm('添加数据成功，是否继续添加数据?', '提示', {
+                            confirmButtonText: '确定',
+                            cancelButtonText: '取消',
+                            type: 'success'
+                            }).then(() => {
+                            // 调用刷新方法
+                            this.reload();
+                            }).catch(() => {        
+                            // 跳转列表页面
+                            this.$router.push("/home/staffmanage");
+                        });
+                    
+                    }else if(code === 1){
+                        this.$message.error(msg); 
+                    }
+                })
+                .catch(err=>{
+                    console.log(err); 
+                })
+            } else {
+                return false;
+            }
+            });
+        },
     }
 }
 </script>
